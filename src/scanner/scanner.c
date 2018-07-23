@@ -50,6 +50,10 @@ bool transition(State* state) {
 				state->type = STATE_RIGHT_BRACKET;
 				state->start = state->current;
 				state->current += 1;
+			} else if (current == '"') {
+				state->type = STATE_STRING_0;
+				state->start = state->current;
+				state->current += 1;
 			} else {
 				state->type = STATE_VAR;
 				state->start = state->current;
@@ -96,6 +100,18 @@ bool transition(State* state) {
 
 		case STATE_RIGHT_BRACKET:
 			appendToken(createToken(TOKEN_RIGHT_BRACKET, state->start, state->current), &state->tokens);
+			state->type = STATE_START;
+			break;
+
+		case STATE_STRING_0:
+			if (current == '"') {
+				state->type = STATE_STRING_1;
+			}
+			state->current += 1;
+			break;
+
+		case STATE_STRING_1:
+			appendToken(createToken(TOKEN_STRING, state->start, state->current), &state->tokens);
 			state->type = STATE_START;
 			break;
 
