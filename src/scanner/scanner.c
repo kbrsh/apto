@@ -26,6 +26,14 @@ bool transition(State* state) {
 				state->current += 1;
 			} else if (current == '\0') {
 				state->type = STATE_END;
+			} else if (current == '=') {
+				state->type = STATE_EQUALS;
+				state->start = state->current;
+				state->current += 1;
+			} else if (current == ':') {
+				state->type = STATE_COLON;
+				state->start = state->current;
+				state->current += 1;
 			} else if (current == '(') {
 				state->type = STATE_LEFT_PAREN;
 				state->start = state->current;
@@ -59,6 +67,16 @@ bool transition(State* state) {
 				state->type = STATE_START;
 			}
 
+			break;
+
+		case STATE_EQUALS:
+			appendToken(createToken(TOKEN_EQUALS, state->start, state->current), &state->tokens);
+			state->type = STATE_START;
+			break;
+
+		case STATE_COLON:
+			appendToken(createToken(TOKEN_COLON, state->start, state->current), &state->tokens);
+			state->type = STATE_START;
 			break;
 
 		case STATE_LEFT_PAREN:
