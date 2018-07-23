@@ -1,5 +1,5 @@
 CC = gcc-7
-CFLAGS = -Wall -g -march=native
+CFLAGS = -Wall -march=native
 src = $(shell find . -name "*.c")
 obj = $(src:.c=.o)
 
