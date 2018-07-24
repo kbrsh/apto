@@ -16,111 +16,111 @@ Token createToken(TokenType type, const char* start, const char* end) {
 	return token;
 }
 
-bool transition(State* state) {
-	const char current = *state->current;
+bool transition(Scanner* scanner) {
+	const char current = *scanner->current;
 
-	switch (state->type) {
-		case STATE_START:
+	switch (scanner->type) {
+		case SCANNER_START:
 			if (isWhitespace(current)) {
-				state->type = STATE_WHITESPACE;
-				state->current += 1;
+				scanner->type = SCANNER_WHITESPACE;
+				scanner->current += 1;
 			} else if (current == '\0') {
-				state->type = STATE_END;
+				scanner->type = SCANNER_END;
 			} else if (current == '=') {
-				state->type = STATE_EQUALS;
-				state->start = state->current;
-				state->current += 1;
+				scanner->type = SCANNER_EQUALS;
+				scanner->start = scanner->current;
+				scanner->current += 1;
 			} else if (current == ':') {
-				state->type = STATE_COLON;
-				state->start = state->current;
-				state->current += 1;
+				scanner->type = SCANNER_COLON;
+				scanner->start = scanner->current;
+				scanner->current += 1;
 			} else if (current == '(') {
-				state->type = STATE_LEFT_PAREN;
-				state->start = state->current;
-				state->current += 1;
+				scanner->type = SCANNER_LEFT_PAREN;
+				scanner->start = scanner->current;
+				scanner->current += 1;
 			} else if (current == ')') {
-				state->type = STATE_RIGHT_PAREN;
-				state->start = state->current;
-				state->current += 1;
+				scanner->type = SCANNER_RIGHT_PAREN;
+				scanner->start = scanner->current;
+				scanner->current += 1;
 			} else if (current == '{') {
-				state->type = STATE_LEFT_BRACKET;
-				state->start = state->current;
-				state->current += 1;
+				scanner->type = SCANNER_LEFT_BRACKET;
+				scanner->start = scanner->current;
+				scanner->current += 1;
 			} else if (current == '}') {
-				state->type = STATE_RIGHT_BRACKET;
-				state->start = state->current;
-				state->current += 1;
+				scanner->type = SCANNER_RIGHT_BRACKET;
+				scanner->start = scanner->current;
+				scanner->current += 1;
 			} else if (current == '"') {
-				state->type = STATE_STRING_0;
-				state->start = state->current;
-				state->current += 1;
+				scanner->type = SCANNER_STRING_0;
+				scanner->start = scanner->current;
+				scanner->current += 1;
 			} else {
-				state->type = STATE_VAR;
-				state->start = state->current;
-				state->current += 1;
+				scanner->type = SCANNER_VAR;
+				scanner->start = scanner->current;
+				scanner->current += 1;
 			}
 			break;
 
-		case STATE_END:
+		case SCANNER_END:
 			return false;
 
-		case STATE_WHITESPACE:
+		case SCANNER_WHITESPACE:
 			if (isWhitespace(current)) {
-				state->current += 1;
+				scanner->current += 1;
 			} else {
-				state->type = STATE_START;
+				scanner->type = SCANNER_START;
 			}
 
 			break;
 
-		case STATE_EQUALS:
-			appendToken(createToken(TOKEN_EQUALS, state->start, state->current), &state->tokens);
-			state->type = STATE_START;
+		case SCANNER_EQUALS:
+			appendToken(createToken(TOKEN_EQUALS, scanner->start, scanner->current), &scanner->tokens);
+			scanner->type = SCANNER_START;
 			break;
 
-		case STATE_COLON:
-			appendToken(createToken(TOKEN_COLON, state->start, state->current), &state->tokens);
-			state->type = STATE_START;
+		case SCANNER_COLON:
+			appendToken(createToken(TOKEN_COLON, scanner->start, scanner->current), &scanner->tokens);
+			scanner->type = SCANNER_START;
 			break;
 
-		case STATE_LEFT_PAREN:
-			appendToken(createToken(TOKEN_LEFT_PAREN, state->start, state->current), &state->tokens);
-			state->type = STATE_START;
+		case SCANNER_LEFT_PAREN:
+			appendToken(createToken(TOKEN_LEFT_PAREN, scanner->start, scanner->current), &scanner->tokens);
+			scanner->type = SCANNER_START;
 			break;
 
-		case STATE_RIGHT_PAREN:
-			appendToken(createToken(TOKEN_RIGHT_PAREN, state->start, state->current), &state->tokens);
-			state->type = STATE_START;
+		case SCANNER_RIGHT_PAREN:
+			appendToken(createToken(TOKEN_RIGHT_PAREN, scanner->start, scanner->current), &scanner->tokens);
+			scanner->type = SCANNER_START;
 			break;
 
-		case STATE_LEFT_BRACKET:
-			appendToken(createToken(TOKEN_LEFT_BRACKET, state->start, state->current), &state->tokens);
-			state->type = STATE_START;
+		case SCANNER_LEFT_BRACKET:
+			appendToken(createToken(TOKEN_LEFT_BRACKET, scanner->start, scanner->current), &scanner->tokens);
+			scanner->type = SCANNER_START;
 			break;
 
-		case STATE_RIGHT_BRACKET:
-			appendToken(createToken(TOKEN_RIGHT_BRACKET, state->start, state->current), &state->tokens);
-			state->type = STATE_START;
+		case SCANNER_RIGHT_BRACKET:
+			appendToken(createToken(TOKEN_RIGHT_BRACKET, scanner->start, scanner->current), &scanner->tokens);
+			scanner->type = SCANNER_START;
 			break;
 
-		case STATE_STRING_0:
+		case SCANNER_STRING_0:
 			if (current == '"') {
-				state->type = STATE_STRING_1;
+				scanner->type = SCANNER_STRING_1;
 			}
-			state->current += 1;
+			scanner->current += 1;
 			break;
 
-		case STATE_STRING_1:
-			appendToken(createToken(TOKEN_STRING, state->start, state->current), &state->tokens);
-			state->type = STATE_START;
+		case SCANNER_STRING_1:
+			appendToken(createToken(TOKEN_STRING, scanner->start, scanner->current), &scanner->tokens);
+			scanner->type = SCANNER_START;
 			break;
 
-		case STATE_VAR:
+		case SCANNER_VAR:
 			if (isWhitespace(current) || current == '(' || current == ')' || current == '{' || current == '}' || current == '\0') {
-				appendToken(createToken(TOKEN_VAR, state->start, state->current), &state->tokens);
-				state->type = STATE_START;
+				appendToken(createToken(TOKEN_VAR, scanner->start, scanner->current), &scanner->tokens);
+				scanner->type = SCANNER_START;
 			} else {
-				state->current += 1;
+				scanner->current += 1;
 			}
 
 			break;
@@ -129,29 +129,21 @@ bool transition(State* state) {
 	return true;
 }
 
-void token(State* state) {
-	while (transition(state));
+void token(Scanner* scanner) {
+	while (transition(scanner));
 }
 
 Tokens scan(const char* source) {
-	State state;
+	Scanner scanner;
 	Tokens tokens;
 
 	createTokens(&tokens);
 
-	state.type = STATE_START;
-	state.current = source;
-	state.tokens = tokens;
+	scanner.type = SCANNER_START;
+	scanner.current = source;
+	scanner.tokens = tokens;
 
-	token(&state);
+	token(&scanner);
 
-	for (int i = 0; i < state.tokens.length; i++) {
-		Token currentToken = getToken(i, &state.tokens);
-		for (const char* c = currentToken.start; c != currentToken.end; c++) {
-			printf("%c", *c);
-		}
-		printf("\n");
-	}
-
-	return state.tokens;
+	return scanner.tokens;
 }

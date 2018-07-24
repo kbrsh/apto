@@ -23,26 +23,26 @@ typedef struct {
 ARRAY_DECLARATION(Token, Tokens)
 
 typedef enum {
-	STATE_START,
-	STATE_END,
-	STATE_WHITESPACE,
-	STATE_EQUALS,
-	STATE_COLON,
-	STATE_LEFT_PAREN,
-	STATE_RIGHT_PAREN,
-	STATE_LEFT_BRACKET,
-	STATE_RIGHT_BRACKET,
-	STATE_STRING_0,
-	STATE_STRING_1,
-	STATE_VAR
-} StateType;
+	SCANNER_START,
+	SCANNER_END,
+	SCANNER_WHITESPACE,
+	SCANNER_EQUALS,
+	SCANNER_COLON,
+	SCANNER_LEFT_PAREN,
+	SCANNER_RIGHT_PAREN,
+	SCANNER_LEFT_BRACKET,
+	SCANNER_RIGHT_BRACKET,
+	SCANNER_STRING_0,
+	SCANNER_STRING_1,
+	SCANNER_VAR
+} ScannerType;
 
 typedef struct {
-	StateType type;
+	ScannerType type;
 	const char* start;
 	const char* current;
 	Tokens tokens;
-} State;
+} Scanner;
 
 Tokens scan(const char* source);
 
